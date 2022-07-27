@@ -17,16 +17,25 @@ async function main() {
 
   const StakingTokenFactory = await ethers.getContractFactory("StakingToken");
   const stakingToken = await upgrades.deployProxy(StakingTokenFactory);
-
+  
   console.log("StakingToken deployed to:", stakingToken.address);
 
   const RewardsTokenFactory = await ethers.getContractFactory("RewardsToken");
   const rewards = await upgrades.deployProxy(RewardsTokenFactory);
+  
   console.log("Rewards deployed to:", rewards.address);
 
   const StakingRewardsFactory = await ethers.getContractFactory("StakingRewards");
   const stakingRewards = await upgrades.deployProxy(StakingRewardsFactory, [stakingToken.address, rewards.address]);
+  
   console.log("StakingRewards deployed to:", stakingRewards.address);
+
+
+  const rewardsBalance = await rewards.balanceOf(rewards.address);
+  console.log("rewardsBalance:", ethers.utils.formatUnits(rewardsBalance, "ether"));
+  await rewards.transferTo(stakingRewards.address, rewardsBalance);
+
+
 
 }
 

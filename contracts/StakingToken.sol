@@ -10,11 +10,16 @@ import "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/draft-ERC20Pe
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 
+
 contract StakingToken is Initializable, ERC20Upgradeable, ERC20BurnableUpgradeable, ERC20SnapshotUpgradeable, AccessControlUpgradeable, PausableUpgradeable, ERC20PermitUpgradeable, UUPSUpgradeable {
     bytes32 public constant SNAPSHOT_ROLE = keccak256("SNAPSHOT_ROLE");
     bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
     bytes32 public constant UPGRADER_ROLE = keccak256("UPGRADER_ROLE");
+
+    uint256 private claim_number;
+    uint256 private release_time;
+    mapping(address => bool) private is_claim;
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
@@ -22,20 +27,24 @@ contract StakingToken is Initializable, ERC20Upgradeable, ERC20BurnableUpgradeab
     }
 
     function initialize() initializer public {
-        __ERC20_init("StakingToken", "ST");
+        __ERC20_init("Aspen", "ASPEN");
         __ERC20Burnable_init();
         __ERC20Snapshot_init();
         __AccessControl_init();
         __Pausable_init();
-        __ERC20Permit_init("StakingToken");
+        __ERC20Permit_init("Aspen");
         __UUPSUpgradeable_init();
 
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _grantRole(SNAPSHOT_ROLE, msg.sender);
         _grantRole(PAUSER_ROLE, msg.sender);
-        _mint(msg.sender, 10000 * 10 ** decimals());
+        _mint(address(this), 99900000 * 10 ** decimals());
+        _mint(msg.sender, 100000 * 10 ** decimals());
         _grantRole(MINTER_ROLE, msg.sender);
         _grantRole(UPGRADER_ROLE, msg.sender);
+
+        release_time = block.timestamp;
+        claim_number = 10000;
     }
 
     function snapshot() public onlyRole(SNAPSHOT_ROLE) {
@@ -67,4 +76,22 @@ contract StakingToken is Initializable, ERC20Upgradeable, ERC20BurnableUpgradeab
         onlyRole(UPGRADER_ROLE)
         override
     {}
+
+    function claim() public {
+        require(tx.origin == msg.sender, "invalid address");
+        if((block.timestamp - release_time) <= 360 days && is_claim[msg.sender] == false ){
+            is_claim[msg.sender] = true;
+            _transfer(address(this), msg.sender, claim_number);
+        }   
+        
+    }
+
+    function set_claim_number(uint256 amount) public onlyRole(MINTER_ROLE) {
+        claim_number = amount;
+    }
+
+    function get_claim_number() public view onlyRole(MINTER_ROLE) returns (uint256) {
+        return claim_number;
+    }
+
 }

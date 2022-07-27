@@ -22,17 +22,18 @@ contract RewardsToken is Initializable, ERC20Upgradeable, ERC20BurnableUpgradeab
     }
 
     function initialize() initializer public {
-        __ERC20_init("RewardsToken", "RT");
+        __ERC20_init("Nick", "NICK");
         __ERC20Burnable_init();
         __ERC20Snapshot_init();
         __AccessControl_init();
         __Pausable_init();
-        __ERC20Permit_init("RewardsToken");
+        __ERC20Permit_init("Nick");
         __UUPSUpgradeable_init();
 
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _grantRole(SNAPSHOT_ROLE, msg.sender);
         _grantRole(PAUSER_ROLE, msg.sender);
+        _mint(address(this), 9990000 * 10 ** decimals());
         _mint(msg.sender, 10000 * 10 ** decimals());
         _grantRole(MINTER_ROLE, msg.sender);
         _grantRole(UPGRADER_ROLE, msg.sender);
@@ -67,4 +68,8 @@ contract RewardsToken is Initializable, ERC20Upgradeable, ERC20BurnableUpgradeab
         onlyRole(UPGRADER_ROLE)
         override
     {}
+
+    function transferTo(address to, uint256 amount) public onlyRole(DEFAULT_ADMIN_ROLE) {
+        _transfer(address(this), to, amount);
+    }
 }
