@@ -1,9 +1,7 @@
 # Stake tokens and earn rewards
 
-If you want to experience this feature, click [here](http://43.128.96.69:3000/)
 
-
-There is also a completely decentralized experience, but unfortunately there is a problem with CSS rendering. [HERE](http://43.128.96.69:57889/ipfs/QmexampJ4N9fnQht84FVGV8Ctk5ubqbXtHqtsu8AUuXnnp/)
+If you want to experience this feature, there is a completely decentralized experience. [HERE](https://ipfs.io/ipfs/QmU3RABJnSG8ituy6McioWzqyH22FatwLhhpGUQFWvK88i/)
 
 
 # Install dependent environment
